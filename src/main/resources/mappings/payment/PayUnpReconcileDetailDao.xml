@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mainsoft.mlp.reconciliation.modules.dao.PayUnpReconcileDetailDao">
+    
+	<sql id="payUnpReconcileDetailColumns">
+		a.id AS "id",
+		a.ordinal AS "ordinal",
+		a.pay_time AS "payTime",
+		a.merchant AS "merchant",
+		a.order_code AS "orderCode",
+		a.trans_type AS "transType",
+		a.trans_amount AS "transAmount",
+		a.trans_status AS "transStatus",
+		a.trans_date AS "transDate",
+		a.gate_code AS "gateCode",
+		a.currency AS "currency",
+		a.cp_date AS "cpDate",
+		a.cp_seq_id AS "cpSeqId",
+		a.priv1 AS "priv1",
+		a.check_value AS "checkValue",
+		a.message AS "message",
+		a.success AS "success",
+		a.version AS "version"
+	</sql>
+	
+	<sql id="payUnpReconcileDetailJoins">
+	</sql>
+    
+	<select id="get" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayUnpReconcileDetail">
+		SELECT 
+			<include refid="payUnpReconcileDetailColumns"/>
+		FROM pay_unp_reconcile_detail a
+		<include refid="payUnpReconcileDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayUnpReconcileDetail">
+		SELECT 
+			<include refid="payUnpReconcileDetailColumns"/>
+		FROM pay_unp_reconcile_detail a
+		<include refid="payUnpReconcileDetailJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findUnpReconcileListForWebService" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayReconcileDetailMapping">
+		select 
+		  A.ID as "id",
+		  A.ORDINAL as "ordinal",
+		  B.DISTRICT as "district",
+		  s.name as "districtName",
+		   g.FINISH_TIME as "transDate",
+		  A.TRANS_AMOUNT as "revenueStr",
+		  A.MERCHANT as "merId",
+		  A.ORDER_CODE as "orderId",
+		  A.CP_SEQ_ID as "seqId",
+		  <!-- e.PAYMENT_ID as "paymentBill", -->
+          a.PRIV1 as "paydefrayBill",
+		  A.SUCCESS as "success",
+		  F.HANDLE_TIME as "handlerDate",
+      	  A.MESSAGE as "message"
+		from PAY_UNP_RECONCILE_DETAIL a 
+		  left join PAY_IMPORT_FILE f on F.ID = A.ID
+		  <!-- inner join PAY_DEFRAY_PAYMENT e on e.DEFRAY_ID = a.PRIV1 -->
+      	  inner join PAY_DEFRAY_BILL g on g.id = a.PRIV1
+		  inner join (select P.DISTRICT,p.MERCHANT_CODE from PAY_UNP_CONFIGURE p
+		  	<where>
+		  		<if test="district != null and district != ''">
+		  			P.DISTRICT = #{district}
+		  		</if>
+		  	</where>
+     		 group by (P.MERCHANT_CODE,P.DISTRICT)) b on b.MERCHANT_CODE = a.MERCHANT
+     	  LEFT JOIN sys_area s ON s.id = b.district
+		<where>
+			<if test="paymentBill != null and paymentBill != ''">
+				and e.PAYMENT_ID = #{paymentBill}
+			</if>
+			and  g.STATUS = '02'
+			<if test="success != null">
+				and A.SUCCESS = #{success}
+			</if>
+			<if test="beginReconcileDate != null and endReconcileDate != null">
+				and g.FINISH_TIME <![CDATA[>=]]> #{beginReconcileDate} and g.FINISH_TIME <![CDATA[<]]> #{endReconcileDate}
+			</if>
+		</where>
+		order by g.FINISH_TIME desc	
+	</select>
+	
+	<select id="findUnpReconcilePageListForWebService" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayReconcileDetailMapping">
+		select * from
+			(select temp.*,rownum rn from
+				(
+		select 
+			A.ID as "id",
+		  	A.ORDINAL as "ordinal",
+		  	B.DISTRICT as "district",
+		  	s.name as "districtName",
+		   	g.FINISH_TIME as "transDate",
+		  	A.TRANS_AMOUNT as "revenueStr",
+		  	A.MERCHANT as "merId",
+		  	A.ORDER_CODE as "orderId",
+		  	A.CP_SEQ_ID as "seqId",
+		  	<!-- e.PAYMENT_ID as "paymentBill", -->
+	        a.PRIV1 as "paydefrayBill",
+		  	A.SUCCESS as "success",
+		  	F.HANDLE_TIME as "handlerDate",
+	     	A.MESSAGE as "message"
+		from PAY_UNP_RECONCILE_DETAIL a 
+		  	left join PAY_IMPORT_FILE f on F.ID = A.ID
+		  	<!-- inner join PAY_DEFRAY_PAYMENT e on e.DEFRAY_ID = a.PRIV1 -->
+      	  	inner join PAY_DEFRAY_BILL g on g.id = a.PRIV1
+		  	inner join (select P.DISTRICT,p.MERCHANT_CODE from PAY_UNP_CONFIGURE p
+				<where>
+			  		<if test="district != null and district != ''">
+			  			P.DISTRICT = #{district}
+			  		</if>
+			  	</where>
+     		 	group by (P.MERCHANT_CODE,P.DISTRICT)) b on b.MERCHANT_CODE = a.MERCHANT
+     	    LEFT JOIN sys_area s ON s.id = b.district
+		<where>
+			<if test="paymentBill != null and paymentBill != ''">
+				and e.PAYMENT_ID = #{paymentBill}
+			</if>
+			and  g.STATUS = '02'
+			<if test="success != null">
+				and A.SUCCESS = #{success}
+			</if>
+			<if test="beginReconcileDate != null and endReconcileDate != null">
+				and g.FINISH_TIME <![CDATA[>=]]> #{beginReconcileDate} and g.FINISH_TIME <![CDATA[<]]> #{endReconcileDate}
+			</if>
+		</where>
+		order by g.FINISH_TIME desc
+		<if test="startNum != null and endNum != null">
+				) temp
+			      where rownum &lt;= #{endNum})
+			where rn &gt;= #{startNum}
+		</if>
+		<if test="startNum == null and endNum == null">
+				) temp
+			      where rownum &lt;= #{pageNo} * #{pageSize})
+			where rn &gt;= (#{pageNo} - 1) * #{pageSize} + 1
+		</if>
+	</select>
+	
+	<select id="findAllList" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayUnpReconcileDetail">
+		SELECT 
+			<include refid="payUnpReconcileDetailColumns"/>
+		FROM pay_unp_reconcile_detail a
+		<include refid="payUnpReconcileDetailJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findListByImportFileId" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayUnpReconcileDetail">
+		SELECT 
+			<include refid="payUnpReconcileDetailColumns"/>
+		FROM pay_unp_reconcile_detail a
+		<include refid="payUnpReconcileDetailJoins"/>
+		<where>
+			a.id = #{id}
+		</where>		
+		
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO pay_unp_reconcile_detail(
+			id,
+			ordinal,
+			pay_time,
+			merchant,
+			order_code,
+			trans_type,
+			trans_amount,
+			trans_status,
+			trans_date,
+			gate_code,
+			currency,
+			cp_date,
+			cp_seq_id,
+			priv1,
+			check_value,
+			message,
+			success,
+			version
+		) VALUES (
+			#{id},
+			#{ordinal},
+			#{payTime},
+			#{merchant},
+			#{orderCode},
+			#{transType},
+			#{transAmount},
+			#{transStatus},
+			#{transDate},
+			#{gateCode},
+			#{currency},
+			#{cpDate},
+			#{cpSeqId},
+			#{priv1},
+			#{checkValue},
+			#{message},
+			#{success},
+			#{version}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE pay_unp_reconcile_detail SET 	
+			ordinal = #{ordinal},
+			pay_time = #{payTime},
+			merchant = #{merchant},
+			order_code = #{orderCode},
+			trans_type = #{transType},
+			trans_amount = #{transAmount},
+			trans_status = #{transStatus},
+			trans_date = #{transDate},
+			gate_code = #{gateCode},
+			currency = #{currency},
+			cp_date = #{cpDate},
+			cp_seq_id = #{cpSeqId},
+			priv1 = #{priv1},
+			check_value = #{checkValue},
+			message = #{message},
+			success = #{success},
+			version = #{version}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updUnpDetailReconcileStatus">
+		UPDATE pay_unp_reconcile_detail SET 	
+			success = #{success}
+			<if test="message != null and message != ''">
+				,message = #{message}
+			</if>
+		WHERE id = #{id}
+		and priv1 = #{priv1}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM pay_unp_reconcile_detail
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

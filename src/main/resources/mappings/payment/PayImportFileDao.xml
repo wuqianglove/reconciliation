@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mainsoft.mlp.reconciliation.modules.dao.PayImportFileDao">
+    
+	<sql id="payImportFileColumns">
+		a.id AS "id",
+		a.type AS "type",
+		a.name AS "name",
+		a.create_time AS "createTime",
+		a.import_time AS "importTime",
+		a.handle_time AS "handleTime",
+		a.SETTLE_DATE AS "settleDate",
+		a.content AS "content",
+		a.status AS "status",
+		a.message AS "message",
+		a.payment_Type AS "paymentType"
+	</sql>
+	
+	<sql id="payImportFileJoins">
+	</sql>
+    
+	<select id="get" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayImportFile">
+		SELECT 
+			<include refid="payImportFileColumns"/>
+		FROM pay_import_file a
+		<include refid="payImportFileJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayImportFile">
+		SELECT 
+			<include refid="payImportFileColumns"/>
+		FROM pay_import_file a
+		<include refid="payImportFileJoins"/>
+		<where>
+			<if test="beginSettleDate != null and endSettleDate != null">
+				and a.SETTLE_DATE <![CDATA[>=]]> #{beginSettleDate} and a.SETTLE_DATE <![CDATA[<]]> #{endSettleDate}
+			</if>
+			<if test="type != null and type != ''">
+				and a.type = #{type}
+			</if>
+			<if test="status != null and status != ''">
+			 	and a.status = #{status}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="beginCreateDate != null and endCreateDate != null">
+				and a.create_time <![CDATA[>=]]> #{beginCreateDate} and a.create_time <![CDATA[<]]> #{endCreateDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayImportFile">
+		SELECT 
+			<include refid="payImportFileColumns"/>
+		FROM pay_import_file a
+		<include refid="payImportFileJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+	
+	<select id="findListForHandwork" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayImportFile">
+		SELECT 
+			<include refid="payImportFileColumns"/>			
+		FROM PAY_UNP_RECONCILE r
+		inner join pay_import_file a on r.id = a.id
+		<include refid="payImportFileJoins"/>
+		<where>
+			<if test="merchant != null and merchant != null">
+				and r.MERCHANT_CODE = #{merchant}
+			</if>
+			<if test="beginSettleDate != null and endSettleDate != null">
+				and a.SETTLE_DATE <![CDATA[>=]]> #{beginSettleDate} and a.SETTLE_DATE <![CDATA[<]]> #{endSettleDate}
+			</if>
+			<if test="type != null and type != ''">
+				and a.type = #{type}
+			</if>
+			<if test="status != null and status != ''">
+			 	and a.status = #{status}
+			</if>
+			<if test="paymentType != null and paymentType != ''">
+			 	and a.payment_Type = #{paymentType}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="beginCreateDate != null and endCreateDate != null">
+				and a.create_time <![CDATA[>=]]> #{beginCreateDate} and a.create_time <![CDATA[<]]> #{endCreateDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	<select id="findListByPaymentType" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayImportFile">
+		SELECT 
+			<include refid="payImportFileColumns"/>
+		FROM pay_import_file a
+		<include refid="payImportFileJoins"/>
+		<where>
+			<if test="beginSettleDate != null and endSettleDate != null">
+				and a.SETTLE_DATE <![CDATA[>=]]> #{beginSettleDate} and a.SETTLE_DATE <![CDATA[<]]> #{endSettleDate}
+			</if>
+			<if test="type != null and type != ''">
+				and a.type = #{type}
+			</if>
+			<if test="status != null and status != ''">
+			 	and a.status = #{status}
+			</if>
+			<if test="paymentType != null and paymentType != ''">
+			 	and a.payment_Type = #{paymentType}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="beginCreateDate != null and endCreateDate != null">
+				and a.create_time <![CDATA[>=]]> #{beginCreateDate} and a.create_time <![CDATA[<]]> #{endCreateDate}
+			</if>
+		</where>
+
+	</select>
+
+	<select id="findListForTest" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayImportFile">
+		SELECT
+		<include refid="payImportFileColumns"/>
+		FROM pay_import_file a
+
+		<where>
+
+		</where>
+
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO pay_import_file(
+			id,
+			type,
+			name,
+			create_time,
+			import_time,
+			handle_time,
+			settle_date,
+			content,
+			status,
+			message,
+			PAYMENT_TYPE
+		) VALUES (
+			#{id},
+			#{type},
+			#{name},
+			#{createTime},
+			#{importTime},
+			#{handleTime},
+			#{settleDate},
+			#{content},
+			#{status},
+			#{message},
+			#{paymentType}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE pay_import_file SET 	
+			type = #{type},
+			name = #{name},
+			create_time = #{createTime},
+			import_time = #{importTime},
+			handle_time = #{handleTime},
+			settle_date = #{settleDate},
+			content = #{content},
+			status = #{status},
+			message = #{message},
+			PAYMENT_TYPE = #{paymentType}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updPayImportFileStatus">
+		UPDATE pay_import_file SET 	
+			status = #{status},
+			handle_time = #{handleTime}
+			<if test="message != null and message != ''">
+				,message = #{message}
+			</if>
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM pay_import_file
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

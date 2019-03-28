@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mainsoft.mlp.reconciliation.modules.dao.PayWcReconcileDao">
+    
+	<sql id="payWcReconcileColumns">
+		a.id AS "id",
+		a.merchant AS "merchant",
+		a.pay_total_count AS "payTotalCount",
+		a.pay_total_amount AS "payTotalAmount",
+		a.refund_amount AS "refundAmount",
+		a.discountsrefund_amount AS "discountsrefundAmount",
+		a.service_amount AS "serviceAmount",
+		a.bill_type AS "billType",
+		a.bill_date AS "billDate",
+		a.success AS "success",
+		a.message AS "message"
+	</sql>
+	
+	<sql id="payWcReconcileJoins">
+	</sql>
+    
+	<select id="get" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayWcReconcile">
+		SELECT 
+			<include refid="payWcReconcileColumns"/>
+		FROM pay_wc_reconcile a
+		<include refid="payWcReconcileJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayWcReconcile">
+		SELECT 
+			<include refid="payWcReconcileColumns"/>
+		FROM pay_wc_reconcile a
+		<include refid="payWcReconcileJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayWcReconcile">
+		SELECT 
+			<include refid="payWcReconcileColumns"/>
+		FROM pay_wc_reconcile a
+		<include refid="payWcReconcileJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO pay_wc_reconcile(
+			id,
+			merchant,
+			pay_total_count,
+			pay_total_amount,
+			refund_amount,
+			discountsrefund_amount,
+			service_amount,
+			bill_type,
+			bill_date,
+			success,
+			message
+		) VALUES (
+			#{id},
+			#{merchant},
+			#{payTotalCount},
+			#{payTotalAmount},
+			#{refundAmount},
+			#{discountsrefundAmount},
+			#{serviceAmount},
+			#{billType},
+			#{billDate},
+			#{success},
+			#{message}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE pay_wc_reconcile SET 	
+			merchant = #{merchant},
+			pay_total_count = #{payTotalCount},
+			pay_total_amount = #{payTotalAmount},
+			refund_amount = #{refundAmount},
+			discountsrefund_amount = #{discountsrefundAmount},
+			service_amount = #{serviceAmount},
+			bill_type = #{billType},
+			bill_date = #{billDate},
+			success = #{success},
+			message = #{message}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM pay_wc_reconcile
+		WHERE id = #{id}
+	</update>
+
+    <update id="updWcReconcileStatus">
+		DELETE FROM pay_wc_reconcile
+		WHERE id = #{id}
+	</update>
+</mapper>

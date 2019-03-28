@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mainsoft.mlp.reconciliation.modules.dao.PayDefrayPaymentDao">
+    
+	<sql id="payDefrayPaymentColumns">
+		a.id AS "id",
+		a.defray_id AS "defrayId",
+		a.payment_id AS "paymentId",
+		a.status AS "status",
+		a.manage AS "manage",
+		
+	</sql>
+	
+	<sql id="payDefrayPaymentJoins">
+	</sql>
+    
+	<select id="get" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayDefrayPayment">
+		SELECT 
+			<include refid="payDefrayPaymentColumns"/>
+		FROM pay_defray_payment a
+		<include refid="payDefrayPaymentJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayDefrayPayment">
+		SELECT 
+			<include refid="payDefrayPaymentColumns"/>
+		FROM pay_defray_payment a
+		<include refid="payDefrayPaymentJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+	<select id="findPaymentBillIdList" resultType="string">
+		SELECT 
+			a.PAYMENT_ID
+		FROM pay_defray_payment a		
+		<where>
+			a.DEFRAY_ID = #{defpayId}
+		</where>
+		
+	</select>
+	
+	<select id="findPaymentBillIdForExternal" resultType="string">
+		SELECT 
+			a.PAYMENT_ID
+		FROM pay_defray_payment a		
+		<where>
+			a.DEFRAY_ID = #{defpayId}
+		</where>
+		
+	</select>
+	
+	<select id="findPaymentListByPayDefrayBillList" resultType="string">
+		SELECT 
+			a.PAYMENT_ID
+		FROM pay_defray_payment a		
+		<where>
+			a.DEFRAY_ID in
+			<foreach collection="payDefrayBillList" item="item" open="(" close=")" separator=",">
+				#{item}
+			</foreach>			
+		</where>
+		
+	</select>
+	
+	<select id="findAllList" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayDefrayPayment">
+		SELECT 
+			<include refid="payDefrayPaymentColumns"/>
+		FROM pay_defray_payment a
+		<include refid="payDefrayPaymentJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+	<insert id="insert">
+		INSERT INTO pay_defray_payment(
+			id,
+			defray_id,
+			payment_id
+					
+		) VALUES (
+			#{id},
+			#{defrayId},
+			#{paymentId}
+			
+			
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE pay_defray_payment SET 	
+			defray_id = #{defrayId},
+			payment_id = #{paymentId},
+			status = #{status},
+			manage = #{manage},
+			create_name = #{createBy.name},
+			update_by = #{updateBy.id},
+			update_name = #{updateBy.name},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateStatus">
+		UPDATE pay_defray_payment SET 							
+			status = #{status}
+			<if test="manage != null and manage != ''">
+			, manage = #{manage}
+			</if>		
+		WHERE defray_id = #{defrayId}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM pay_defray_payment
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

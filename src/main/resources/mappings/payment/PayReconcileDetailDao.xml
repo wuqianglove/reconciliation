@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mainsoft.mlp.reconciliation.modules.dao.PayReconcileDetailDao">
+    
+	<sql id="payReconcileDetailColumns">
+		a.id AS "id",
+		a.ordinal AS "ordinal",
+		a.pay_time AS "payTime",
+		a.channel AS "channel",
+		a.merchant AS "merchant",
+		a.biz_type_code AS "bizTypeCode",
+		a.biz_type_name AS "bizTypeName",
+		a.payer_code AS "payerCode",
+		a.payer_name AS "payerName",
+		a.payee_code AS "payeeCode",
+		a.payee_account AS "payeeAccount",
+		a.account_bank AS "accountBank",
+		a.account_name AS "accountName",
+		a.payer_account AS "payerAccount",
+		a.order_code AS "orderCode",
+		a.trans_type AS "transType",
+		a.trans_amount AS "transAmount",
+		a.trans_status AS "transStatus",
+		a.trans_date AS "transDate",
+		a.gate_code AS "gateCode",
+		a.currency AS "currency",
+		a.cp_date AS "cpDate",
+		a.payment_no AS "paymentNo",
+		a.cp_seq_id AS "cpSeqId",
+		a.priv1 AS "priv1",
+		a.check_value AS "checkValue",
+		a.message AS "message",
+		a.success AS "success",
+		a.version AS "version"
+	</sql>
+	
+	<sql id="payReconcileDetailJoins">
+	</sql>
+    
+	<select id="get" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayReconcileDetail">
+		SELECT 
+			<include refid="payReconcileDetailColumns"/>
+		FROM pay_reconcile_detail a
+		<include refid="payReconcileDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayReconcileDetail">
+		SELECT 
+			<include refid="payReconcileDetailColumns"/>
+		FROM pay_reconcile_detail a
+		<include refid="payReconcileDetailJoins"/>
+		<where>
+			a.id = #{id}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayReconcileDetail">
+		SELECT 
+			<include refid="payReconcileDetailColumns"/>
+		FROM pay_reconcile_detail a
+		<include refid="payReconcileDetailJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO pay_reconcile_detail(
+			id,
+			ordinal,
+			pay_time,
+			channel,
+			merchant,
+			biz_type_code,
+			biz_type_name,
+			payer_code,
+			payer_name,
+			payee_code,
+			payee_account,
+			account_bank,
+			account_name,
+			payer_account,
+			order_code,
+			trans_type,
+			trans_amount,
+			trans_status,
+			trans_date,
+			gate_code,
+			currency,
+			cp_date,
+			payment_no,
+			cp_seq_id,
+			priv1,
+			check_value,
+			message,
+			success,
+			version
+		) VALUES (
+			#{id},
+			#{ordinal},
+			#{payTime},
+			#{channel},
+			#{merchant},
+			#{bizTypeCode},
+			#{bizTypeName},
+			#{payerCode},
+			#{payerName},
+			#{payeeCode},
+			#{payeeAccount},
+			#{accountBank},
+			#{accountName},
+			#{payerAccount},
+			#{orderCode},
+			#{transType},
+			#{transAmount},
+			#{transStatus},
+			#{transDate},
+			#{gateCode},
+			#{currency},
+			#{cpDate},
+			#{paymentNo},
+			#{cpSeqId},
+			#{priv1},
+			#{checkValue},
+			#{message},
+			#{success},
+			#{version}
+		)
+	</insert>
+	
+	<update id="updateSyncDetail">
+		UPDATE pay_reconcile_detail SET 				
+		<choose>
+            <when test="remarks != null and remarks != ''">
+               remarks = #{remarks}
+			   ,sync = '-1'
+            </when>
+            <otherwise>
+                sync = '1'
+            </otherwise>
+        </choose>
+		WHERE order_code = #{orderCode} 
+		
+	</update>
+	
+	<update id="update">
+		UPDATE pay_reconcile_detail SET 	
+			ordinal = #{ordinal},
+			pay_time = #{payTime},
+			channel = #{channel},
+			merchant = #{merchant},
+			biz_type_code = #{bizTypeCode},
+			biz_type_name = #{bizTypeName},
+			payer_code = #{payerCode},
+			payer_name = #{payerName},
+			payee_code = #{payeeCode},
+			payee_account = #{payeeAccount},
+			account_bank = #{accountBank},
+			account_name = #{accountName},
+			payer_account = #{payerAccount},
+			order_code = #{orderCode},
+			trans_type = #{transType},
+			trans_amount = #{transAmount},
+			trans_status = #{transStatus},
+			trans_date = #{transDate},
+			gate_code = #{gateCode},
+			currency = #{currency},
+			cp_date = #{cpDate},
+			payment_no = #{paymentNo},
+			cp_seq_id = #{cpSeqId},
+			priv1 = #{priv1},
+			check_value = #{checkValue},
+			message = #{message},
+			success = #{success},
+			version = #{version}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM pay_reconcile_detail
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

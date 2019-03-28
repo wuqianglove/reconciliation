@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mainsoft.mlp.reconciliation.modules.dao.PayDefrayBillDao">
+    
+	<sql id="payDefrayBillColumns">
+		a.id AS "id",
+		a.payment_bill AS "paymentBill",
+		a.finish_time AS "finishTime",
+		a.status AS "status",
+		a.submit_time AS "submitTime",
+		a.merchant AS "merchant",
+		a.avenue AS "avenue",
+		a.order_code AS "orderCode",
+		a.create_by AS "createBy.id",
+		a.create_name AS "createBy.name",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_name AS "updateBy.name",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.DISTRICT AS "district",		
+		a.gate_code AS "gateCode",
+		a.total_revenue AS "revenue"
+	</sql>
+	
+	<sql id="payDefrayBillJoins">
+	</sql>
+    
+	<select id="get" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayDefrayBill">
+		SELECT 
+			<include refid="payDefrayBillColumns"/>
+		FROM pay_defray_bill a
+		<include refid="payDefrayBillJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getPayDefrayBillByPaymentBill" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayDefrayBill">
+		SELECT 
+			<include refid="payDefrayBillColumns"/>
+		FROM pay_defray_bill a
+		<include refid="payDefrayBillJoins"/>
+		WHERE a.payment_bill = #{paymentBillNo}
+	</select>
+
+	<select id="findList" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayDefrayBill">
+		SELECT 
+			<include refid="payDefrayBillColumns"/>
+		FROM pay_defray_bill a
+		<include refid="payDefrayBillJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="beginCreateDate != null and endCreateDate != null">
+				and a.CREATE_DATE between #{beginCreateDate} and #{endCreateDate}
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status}
+			</if>
+			<if test="avenue != null and avenue != ''">
+				and a.avenue = #{avenue}
+			</if>
+			<if test="id != null and id != ''">
+				and a.id = #{id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+	<select id="findConfiscateList" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayDefrayBill">
+		SELECT 
+			<include refid="payDefrayBillColumns"/>
+		FROM pay_defray_bill a
+		left join PAY_DEFRAY_PAYMENT d on d.DEFRAY_ID=a.ID left JOIN PAY_PAYMENT_BILL p on d.PAYMENT_ID=p.id 
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL} and p.BUSINESS_TYPE='02' 
+			<if test="beginCreateDate != null and endCreateDate != null">
+				and a.CREATE_DATE between #{beginCreateDate} and #{endCreateDate}
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status}
+			</if>
+			<if test="avenue != null and avenue != ''">
+				and a.avenue = #{avenue}
+			</if>
+			<if test="id != null and id != ''">
+				and a.id = #{id}
+			</if>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+		<select id="findExamList" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayDefrayBill">
+		SELECT 
+			<include refid="payDefrayBillColumns"/>
+		FROM pay_defray_bill a
+		left join PAY_DEFRAY_PAYMENT d on d.DEFRAY_ID=a.ID left JOIN PAY_PAYMENT_BILL p on d.PAYMENT_ID=p.id 
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL} and p.BUSINESS_TYPE='03' 
+			<if test="beginCreateDate != null and endCreateDate != null">
+				and a.CREATE_DATE between #{beginCreateDate} and #{endCreateDate}
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status}
+			</if>
+			<if test="avenue != null and avenue != ''">
+				and a.avenue = #{avenue}
+			</if>
+			<if test="id != null and id != ''">
+				and a.id = #{id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+	
+	<select id="findAllList" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayDefrayBill">
+		SELECT 
+			<include refid="payDefrayBillColumns"/>
+		FROM pay_defray_bill a
+		<include refid="payDefrayBillJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	<!-- 2018.04.10 guodongyu 支撑银行对账 -->
+	<select id="findListByPayDefrayBillList" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayDefrayBill">
+		SELECT 
+			<include refid="payDefrayBillColumns"/>
+		FROM pay_defray_bill a
+		<include refid="payDefrayBillJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="payDefrayBillList != null">
+				and a.id in <foreach collection="payDefrayBillList" item="item" open="(" close=")" separator=",">
+					#{item}
+				</foreach>
+			</if>
+		</where>		
+		
+	</select>
+
+	<select id="findListByOrderCodeList" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayDefrayBill">
+		SELECT
+		<include refid="payDefrayBillColumns"/>
+		FROM pay_defray_bill a
+		<include refid="payDefrayBillJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="orderCodeList != null">
+				and a.ORDER_CODE in <foreach collection="orderCodeList" item="item" open="(" close=")" separator=",">
+				#{item}
+			</foreach>
+			</if>
+		</where>
+
+	</select>
+	
+	<insert id="saveForExternal">
+		INSERT INTO pay_defray_bill(
+			id,
+			payment_bill,
+			finish_time,
+			status,
+			submit_time,
+			merchant,
+			avenue,
+			order_code,
+			create_by,
+			create_name,
+			create_date,
+			update_by,
+			update_name,
+			update_date,
+			remarks,
+			del_flag，
+			total_revenue,
+			refund_flag,
+			refund_status,
+			refund_date,
+			district
+		) VALUES (
+			#{id},
+			#{paymentBill},
+			#{finishTime},
+			#{status},
+			#{submitTime},
+			#{merchant},
+			#{avenue},
+			#{orderCode},
+			#{createBy.id},
+			#{createBy.name},
+			#{createDate},
+			#{updateBy.id},
+			#{updateBy.name},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{revenue},
+			#{refundFlag},
+			#{refundStatus},
+			#{refundDate},
+			#{district}
+		)
+	</insert>
+	<insert id="insert">
+		INSERT INTO pay_defray_bill(
+			id,
+			payment_bill,
+			finish_time,
+			status,
+			submit_time,
+			merchant,
+			avenue,
+			order_code,
+			create_by,
+			create_name,
+			create_date,
+			update_by,
+			update_name,
+			update_date,
+			remarks,
+			del_flag，
+			total_revenue,
+			refund_flag,
+			refund_status,
+			refund_date,
+			district,			
+			gate_code
+		) VALUES (
+			#{id},
+			#{paymentBill},
+			#{finishTime},
+			#{status},
+			#{submitTime},
+			#{merchant},
+			#{avenue},
+			#{orderCode},
+			#{createBy.id},
+			#{createBy.name},
+			#{createDate},
+			#{updateBy.id},
+			#{updateBy.name},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{revenue},
+			#{refundFlag},
+			#{refundStatus},
+			#{refundDate},
+			#{district},			
+			#{gateCode}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE pay_defray_bill SET 	
+			payment_bill = #{paymentBill},
+			finish_time = #{finishTime},
+			status = #{status},
+			submit_time = #{submitTime},
+			merchant = #{merchant},
+			avenue = #{avenue},
+			order_code = #{orderCode},
+			update_by = #{updateBy.id},
+			update_name = #{updateBy.name},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			refund_flag = #{refundFlag},
+			refund_status = #{refundStatus}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE pay_defray_bill SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="managePay">
+		UPDATE PAY_DEFRAY_BILL SET													
+			REFUND_STATUS = '02',
+			update_by = #{updateBy.id},
+			update_name = #{updateBy.name},
+			update_date = #{updateDate},
+			refund_date = #{refundDate}									
+		WHERE id = #{id}
+	</update>
+	
+	<update id="cancellationPayDefrayBill">
+		UPDATE pay_defray_bill SET 
+			remarks = #{remarks},
+			del_flag = '1'
+		WHERE id in <foreach collection="payDefrayBillList" item="item" index="index"  open="(" separator="," close=")">#{item}</foreach>
+	</update>
+</mapper>

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mainsoft.mlp.reconciliation.modules.dao.PayWcReconcileDetailDao">
+    
+	<sql id="payWcReconcileDetailColumns">
+		a.id AS "id",
+		a.ordinal AS "ordinal",
+		a.pay_time AS "payTime",
+		a.merchant AS "merchant",
+		a.order_code AS "orderCode",
+		a.payment_bill AS "paymentBill",
+		a.trans_type AS "transType",
+		a.trans_amount AS "transAmount",
+		a.trans_status AS "transStatus",
+		a.message AS "message",
+		a.success AS "success"
+	</sql>
+	
+	<sql id="payWcReconcileDetailJoins">
+	</sql>
+    
+	<select id="get" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayWcReconcileDetail">
+		SELECT 
+			<include refid="payWcReconcileDetailColumns"/>
+		FROM pay_wc_reconcile_detail a
+		<include refid="payWcReconcileDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayWcReconcileDetail">
+		SELECT 
+			<include refid="payWcReconcileDetailColumns"/>
+		FROM pay_wc_reconcile_detail a
+		<include refid="payWcReconcileDetailJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+
+    <select id="findListByImportFileId" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayWcReconcileDetail">
+        SELECT
+        <include refid="payWcReconcileDetailColumns"/>
+        FROM pay_wc_reconcile_detail a
+        <include refid="payWcReconcileDetailJoins"/>
+        <where>
+        a.id = #{id}
+        </where>
+    </select>
+	
+	<select id="findAllList" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayWcReconcileDetail">
+		SELECT 
+			<include refid="payWcReconcileDetailColumns"/>
+		FROM pay_wc_reconcile_detail a
+		<include refid="payWcReconcileDetailJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO pay_wc_reconcile_detail(
+			id,
+			ordinal,
+			pay_time,
+			merchant,
+			order_code,
+			payment_bill,
+			trans_type,
+			trans_amount,
+			trans_status,
+			message,
+			success
+		) VALUES (
+			#{id},
+			#{ordinal},
+			#{payTime},
+			#{merchant},
+			#{orderCode},
+			#{paymentBill},
+			#{transType},
+			#{transAmount},
+			#{transStatus},
+			#{message},
+			#{success}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE pay_wc_reconcile_detail SET 	
+			ordinal = #{ordinal},
+			pay_time = #{payTime},
+			merchant = #{merchant},
+			order_code = #{orderCode},
+			payment_bill = #{paymentBill},
+			trans_type = #{transType},
+			trans_amount = #{transAmount},
+			trans_status = #{transStatus},
+			message = #{message},
+			success = #{success}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM pay_wc_reconcile_detail
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mainsoft.mlp.reconciliation.modules.dao.PayUnpReconcileDao">
+    
+	<sql id="payUnpReconcileColumns">
+		a.id AS "id",
+		a.merchant AS "merchant",
+		a.pay_total_count AS "payTotalCount",
+		a.pay_total_amount AS "payTotalAmount",
+		a.pay_success_count AS "paySuccessCount",
+		a.pay_success_amount AS "paySuccessAmount",
+		a.refund_count AS "refundCount",
+		a.refund_amount AS "refundAmount",
+		a.refund_cancel_count AS "refundCancelCount",
+		a.refund_cancel_amount AS "refundCancelAmount",
+		a.split_type AS "splitType",
+		a.trans_date AS "transDate",
+		a.success AS "success",
+		a.message AS "message"
+	</sql>
+	
+	<sql id="payUnpReconcileJoins">
+	</sql>
+    
+	<select id="get" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayUnpReconcile">
+		SELECT 
+			<include refid="payUnpReconcileColumns"/>
+		FROM pay_unp_reconcile a
+		<include refid="payUnpReconcileJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayUnpReconcile">
+		SELECT 
+			<include refid="payUnpReconcileColumns"/>
+		FROM pay_unp_reconcile a
+		<include refid="payUnpReconcileJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayUnpReconcile">
+		SELECT 
+			<include refid="payUnpReconcileColumns"/>
+		FROM pay_unp_reconcile a
+		<include refid="payUnpReconcileJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO pay_unp_reconcile(
+			id,
+			merchant,
+			pay_total_count,
+			pay_total_amount,
+			pay_success_count,
+			pay_success_amount,
+			refund_count,
+			refund_amount,
+			refund_cancel_count,
+			refund_cancel_amount,
+			split_type,
+			trans_date,
+			success,
+			message
+		) VALUES (
+			#{id},
+			#{merchant},
+			#{payTotalCount},
+			#{payTotalAmount},
+			#{paySuccessCount},
+			#{paySuccessAmount},
+			#{refundCount},
+			#{refundAmount},
+			#{refundCancelCount},
+			#{refundCancelAmount},
+			#{splitType},
+			#{transDate},
+			#{success},
+			#{message}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE pay_unp_reconcile SET 	
+			merchant = #{merchant},
+			pay_total_count = #{payTotalCount},
+			pay_total_amount = #{payTotalAmount},
+			pay_success_count = #{paySuccessCount},
+			pay_success_amount = #{paySuccessAmount},
+			refund_count = #{refundCount},
+			refund_amount = #{refundAmount},
+			refund_cancel_count = #{refundCancelCount},
+			refund_cancel_amount = #{refundCancelAmount},
+			split_type = #{splitType},
+			trans_date = #{transDate},
+			success = #{success},
+			message = #{message}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updUnpReconcileStatus">
+		UPDATE pay_unp_reconcile SET 	
+			success = #{success}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM pay_unp_reconcile
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

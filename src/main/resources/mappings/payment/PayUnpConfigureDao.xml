@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mainsoft.mlp.reconciliation.modules.dao.PayUnpConfigureDao">
+    
+	<sql id="payUnpConfigureColumns">
+		a.id AS "id",
+		a.district AS "district",
+		a.account_type AS "accountType",
+		a.merchant_code AS "merchantCode",
+		a.merchant_name AS "merchantName",
+		a.MERCHANT_SIMPLENAME AS "merchantSimpleName",
+		a.KEY_PWD AS "keyPwd",
+		a.split_type AS "splitType",
+		a.split_code AS "splitCode",
+		a.public_key AS "publicKey",
+		a.private_key AS "privateKey",
+		a.create_by AS "createBy.id",
+		a.create_name AS "createBy.name",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_name AS "updateBy.name",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.business_type AS "businessType"
+	</sql>
+	
+	<sql id="payUnpConfigureJoins">
+	</sql>
+    
+	<select id="get" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayUnpConfigure">
+		SELECT 
+			<include refid="payUnpConfigureColumns"/>
+		FROM pay_unp_configure a
+		<include refid="payUnpConfigureJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	
+	<select id="getUnpConfigureByMerchant" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayUnpConfigure">
+		SELECT 
+  		a.district            AS "district",
+  		a.account_type        AS "accountType",
+  		a.merchant_code       AS "merchantCode",
+  		a.merchant_name       AS "merchantName",
+  		a.KEY_PWD             AS "keyPwd",
+  		a.split_type          AS "splitType",
+  		a.split_code          AS "splitCode",
+  		a.public_key          AS "publicKey",
+  		a.private_key         AS "privateKey"
+		FROM pay_unp_configure a
+		WHERE a.merchant_code = #{merchant}
+		GROUP BY 
+  		a.district,a.account_type,a.merchant_code,a.merchant_name,a.KEY_PWD ,a.split_type,a.split_code,a.public_key,a.private_key
+	</select>
+	
+	<select id="findPayunpConfigureForExternal" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayUnpConfigure">
+		SELECT 
+			<include refid="payUnpConfigureColumns"/>
+		FROM pay_unp_configure a
+		<include refid="payUnpConfigureJoins"/>
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL} 
+		and a.DISTRICT = #{district}
+		and a.business_type = #{businessType}
+		<if test="accountType != null and accountType != ''">
+				and a.account_type = #{accountType}
+			</if>
+		<if test="merchantCode != null and merchantCode != ''">
+				and merchant_code = #{merchantCode}
+			</if>
+		
+	</select>
+	
+	<select id="findList" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayUnpConfigure">
+		SELECT 
+			<include refid="payUnpConfigureColumns"/>
+		FROM pay_unp_configure a
+		<include refid="payUnpConfigureJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="accountType != null and accountType != ''">
+				and a.account_type = #{accountType}
+			</if>
+			<if test="merchantCode != null and merchantCode != ''">
+				and merchant_code = #{merchantCode}
+			</if>
+			<if test="businessType != null and businessType != ''">
+				and business_type = #{businessType}
+			</if>
+			<!-- 数据范围过滤 -->
+			${sqlMap.dsf}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findMerchantListForHandwork" resultType="java.lang.String">
+		SELECT 
+			a.merchant_code AS "merchantCode"
+		FROM pay_unp_configure a
+		<include refid="payUnpConfigureJoins"/>
+		<where>		
+		 	a.del_flag = #{DEL_FLAG_NORMAL}							
+			<if test="district != null and district != ''">
+				and DISTRICT = #{district}
+			</if>							
+		</where>
+		<choose>
+			<when test="paymentType !=null and paymentType != '' and paymentType =='01'">
+				and business_type = '01'
+			</when>
+			<otherwise>
+				<![CDATA[ and a.business_type <> '01' ]]>
+			</otherwise>
+		</choose>			
+		group by a.MERCHANT_CODE
+	</select>	
+	
+	<select id="findAllList" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayUnpConfigure">
+		SELECT 
+			<include refid="payUnpConfigureColumns"/>
+		FROM pay_unp_configure a
+		<include refid="payUnpConfigureJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<!-- guody 2018.04.28 添加查询非港建费的银联在线配置信息list xml  支撑外部系统对账文件下载 -->
+	<select id="findAllListForExternal" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayUnpConfigure">
+		SELECT 
+			<include refid="payUnpConfigureColumns"/>
+		FROM pay_unp_configure a
+		<include refid="payUnpConfigureJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			 <![CDATA[ and a.business_type <> '01' ]]>
+		</where>		
+		
+	</select>
+	
+	
+	<!-- guody 2018.04.28 添加查询港建费的银联在线配置信息list xml  支撑港建费系统对账文件下载 -->
+	<select id="findAllListForPort" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayUnpConfigure">
+		SELECT 
+			<include refid="payUnpConfigureColumns"/>
+		FROM pay_unp_configure a
+		<include refid="payUnpConfigureJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			 and a.business_type = '01'  
+		</where>		
+		
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO pay_unp_configure(
+			id,
+			district,
+			account_type,
+			merchant_code,
+			merchant_name,
+			MERCHANT_SIMPLENAME,
+		    KEY_PWD,
+			split_type,
+			split_code,
+			public_key,
+			private_key,
+			create_by,
+			create_name,
+			create_date,
+			update_by,
+			update_name,
+			update_date,
+			remarks,
+			del_flag,
+			BUSINESS_TYPE
+		) VALUES (
+			#{id},
+			#{district},
+			#{accountType},
+			#{merchantCode},
+			#{merchantName},
+			#{merchantSimpleName},
+			#{keyPwd},
+			#{splitType},
+			#{splitCode},
+			#{publicKey},
+			#{privateKey},
+			#{createBy.id},
+			#{createBy.name},
+			#{createDate},
+			#{updateBy.id},
+			#{updateBy.name},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{businessType}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE pay_unp_configure SET 	
+			district = #{district},
+			account_type = #{accountType},
+			merchant_code = #{merchantCode},
+			merchant_simplename = #{merchantSimpleName},
+			key_pwd = #{keyPwd},
+			merchant_name = #{merchantName},
+			split_type = #{splitType},
+			split_code = #{splitCode},
+			public_key = #{publicKey},
+			private_key = #{privateKey},
+			update_by = #{updateBy.id},
+			update_name = #{updateBy.name},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE pay_unp_configure SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<select id="getByAreaIdAndType" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayUnpConfigure">
+		SELECT 
+			<include refid="payUnpConfigureColumns"/>
+		FROM pay_unp_configure a
+		<include refid="payUnpConfigureJoins"/>
+		WHERE a.del_flag = '0' AND a.district = #{areaId} AND a.account_type = #{type}
+	</select>
+	
+	<select id="getPayunpConfigureForQuery" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayUnpConfigure">
+		SELECT 
+			<include refid="payUnpConfigureColumns"/>
+		FROM pay_unp_configure a
+		<include refid="payUnpConfigureJoins"/>
+		WHERE a.district = #{district} 
+		AND a.account_type = #{accountType}
+		and a.merchant_code = #{merchantCode}
+		and a.business_type = #{businessType}
+	</select>
+</mapper>

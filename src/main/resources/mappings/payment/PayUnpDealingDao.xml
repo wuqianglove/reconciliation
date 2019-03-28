@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mainsoft.mlp.reconciliation.modules.dao.PayUnpDealingDao">
+    
+	<sql id="payUnpDealingColumns">
+		a.id AS "id",
+		a.defray_bill AS "defrayBill",
+		a.merchant AS "merchant",
+		a.order_code AS "orderCode",
+		a.amount AS "amount",
+		a.trans_type AS "transType",
+		a.status AS "status",
+		a.check_value AS "checkValue",
+		a.priv1 AS "priv1",
+		a.trans_date AS "transDate",
+		a.currency AS "currency",
+		a.gate_code AS "gateCode",
+		a.response_code AS "responseCode",
+		a.process_date AS "processDate",
+		a.send_time AS "sendTime",
+		a.message AS "message",
+		a.share_data AS "shareData",
+		a.share_type AS "shareType",
+		a.pay_time AS "payTime",
+		a.refund_num AS "refundNum",
+		a.create_by AS "createBy.id",
+		a.create_name AS "createBy.name",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_name AS "updateBy.name",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="payUnpDealingJoins">
+	</sql>
+    
+	<select id="get" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayUnpDealing">
+		SELECT 
+			<include refid="payUnpDealingColumns"/>
+		FROM pay_unp_dealing a
+		<include refid="payUnpDealingJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayUnpDealing">
+		SELECT 
+			<include refid="payUnpDealingColumns"/>
+		FROM pay_unp_dealing a
+		<include refid="payUnpDealingJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="com.mainsoft.mlp.reconciliation.modules.entity.PayUnpDealing">
+		SELECT 
+			<include refid="payUnpDealingColumns"/>
+		FROM pay_unp_dealing a
+		<include refid="payUnpDealingJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO pay_unp_dealing(
+			id,
+			defray_bill,
+			merchant,
+			order_code,
+			amount,
+			trans_type,
+			status,
+			check_value,
+			priv1,
+			trans_date,
+			currency,
+			gate_code,
+			response_code,
+			process_date,
+			send_time,
+			message,
+			share_data,
+			share_type,
+			pay_time,
+			refund_num,
+			create_by,
+			create_name,
+			create_date,
+			update_by,
+			update_name,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{defrayBill},
+			#{merchant},
+			#{orderCode},
+			#{amount},
+			#{transType},
+			#{status},
+			#{checkValue},
+			#{priv1},
+			#{transDate},
+			#{currency},
+			#{gateCode},
+			#{responseCode},
+			#{processDate},
+			#{sendTime},
+			#{message},
+			#{shareData},
+			#{shareType},
+			#{payTime},
+			#{refundNum},
+			#{createBy.id},
+			#{createBy.name},
+			#{createDate},
+			#{updateBy.id},
+			#{updateBy.name},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE pay_unp_dealing SET 	
+			defray_bill = #{defrayBill},
+			merchant = #{merchant},
+			order_code = #{orderCode},
+			amount = #{amount},
+			trans_type = #{transType},
+			status = #{status},
+			check_value = #{checkValue},
+			priv1 = #{priv1},
+			trans_date = #{transDate},
+			currency = #{currency},
+			gate_code = #{gateCode},
+			response_code = #{responseCode},
+			process_date = #{processDate},
+			send_time = #{sendTime},
+			message = #{message},
+			share_data = #{shareData},
+			share_type = #{shareType},
+			pay_time = #{payTime},
+			refund_num = #{refundNum},
+			update_by = #{updateBy.id},
+			update_name = #{updateBy.name},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE pay_unp_dealing SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
